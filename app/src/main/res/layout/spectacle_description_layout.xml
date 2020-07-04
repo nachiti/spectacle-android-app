@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/spectacle_description_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBackground"
+    android:elevation="3dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    >
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#d4d4d4"
+        android:padding="16dp"
+        android:text="Description"
+        android:textColor="@color/colorGris"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Play Two et Olympia Production (2-1096518/3-1096519) présentent en accord avec Indifference Prod et NOÉ MUSIC ce concert.
+
+VersuS, le titre de la première chanson issu d’un projet incroyable et évident.
+
+VersuS, les confessions musicales de Vitaa et Slimane, deux artistes que le destin a décidé de réunir le temps d’un album duo. disponible le 23 août prochain.
+
+VersuS Tour, une tournée des zéniths à deux. Un spectacle musical unique mettant en scène les interprètes du tube « Je te le donne ». Un rendez-vous exceptionnel que vous donnent Slimane et Vitaa le temps d’une série de concerts uniques à travers toute la France, la Belgique et la Suisse dès mars 2020."
+        android:textColor="@color/colorNoir"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+</androidx.constraintlayout.widget.ConstraintLayout>

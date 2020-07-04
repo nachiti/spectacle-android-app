@@ -1,0 +1,39 @@
+ {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "titre": "AMIR",
+        "images": [
+            "photo1_1.jpg",
+            "photo1_2.jpg"
+        ],
+        "type": "Musique",
+        "adresse":"Zenith de lille, Lille Grand Palais, 1 Boulevard des Cités Unies, 59000 Lille, France",
+        "date":"12/07/2020 20:30",
+        "prix": 45.99,
+        "description": "Amir, l’artiste aux plus de 600 000 albums vendus et aux multiples tubes et récompenses est enfin de retour !\n" +
+                                                "\n" +
+                                                "Avec la sortie de ‘La Fête’, le premier single de son prochain album, le message est clair, universel et fédérateur : Fêtons la vie tous ensemble et tout le temps que ça dure. Prolongez la fête en retrouvant Amir sur scène en 2021, notamment au Zénith de Paris, le 6 mars 2021 !\n" +
+                                                "\n" +
+                                                "Réservez vos places de concert pour : AMIR - ZENITH ARENA LILLE\n" +
+                                                "Le prix des places est à partir de : 35.00 €\n" +
+                                                "Date : mardi 2 mars 2021\n" +
+                                                "Vous disposez par ailleurs du service e-ticket pour imprimer vos billets à domicile dès la fin de commande pour AMIR ainsi que du plan de salle interactif pour choisir vos places dans le lieu : ZENITH ARENA LILLE.",
+        "accesHandicap": "true",
+        "interExter": "Interieur",
+        "selected": false,
+        "loading": false,
+        "loading_progress": 0,
+        "favourite": false,
+        "zoom" : 13.5,
+        "bearing" : 35,
+        "tilt" : 28
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+        50.632538
+        ,3.0781436
+        ]
+      }
+    }

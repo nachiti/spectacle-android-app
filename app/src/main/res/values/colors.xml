@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f50057</color>
+    <color name="colorPrimaryDark">#c51162</color>
+    <color name="colorAccent">#ffa700</color>
+    <color name="colorBackground">#ffffff</color>
+    <color name="colorGris">#8191a0</color>
+    <color name="colorNoir">#1a1a1a</color>
+    <color name="colorBlanc">#ffffff</color>
+    <color name="mapboxGray">#607d9c</color>
+</resources>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:elevation="3dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    >
+
+    <TextView
+        android:id="@+id/textView0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#d4d4d4"
+        android:padding="16dp"
+        android:text="Ajouter un avis"
+        android:textColor="@color/colorGris"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView0"
+        android:layout_marginTop="8dp"
+        >
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/pseudonyme_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorAccent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiet_pseudonyme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Pseudonyme"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_gravity="center"
+                android:text="Note : "
+                android:textColor="@color/colorAccent"
+
+                />
+
+            <RatingBar
+                android:id="@+id/rb_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:rating="3.5"
+                />
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/colorAccent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiet_commentaire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Commentaire"
+                android:inputType="textMultiLine" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/btn_submit_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:text="Ajouter"
+            android:textStyle="bold"
+            android:textColor="@color/colorGris"
+            android:background="@drawable/rectangle_background"
+            app:rippleColor="@color/colorPrimary"
+            />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

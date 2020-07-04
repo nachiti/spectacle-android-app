@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">spectacleApp</string>
+    <string name="access_token">TOKEN MAPBOX A SAISIR</string>
+</resources>
