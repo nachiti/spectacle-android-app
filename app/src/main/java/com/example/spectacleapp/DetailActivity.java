@@ -1,6 +1,8 @@
 package com.example.spectacleapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -8,12 +10,18 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.spectacleapp.adapters.CommentaireAdapter;
 import com.example.spectacleapp.adapters.SpectacleImagesAdapter;
+import com.example.spectacleapp.models.Commentaire;
 import com.example.spectacleapp.models.Spectacle;
 import com.example.spectacleapp.service.ServiceGenerator;
 import com.example.spectacleapp.service.SpectacleService;
@@ -22,13 +30,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 
@@ -55,7 +62,12 @@ public class DetailActivity extends AppCompatActivity {
     //Add comment form layout
     private TextInputEditText textInputEditTextPseudo;
     private RatingBar ratingBarNote;
+    private TextInputEditText textInputEditTextCommentaire;
     private Button buttonSubmitComment;
+    //List view for comments
+    private RecyclerView recyclerViewCommentaires;
+    private List<Commentaire> commentaireList;
+    private CommentaireAdapter commentaireAdapter;
 
     private boolean ALREADY_ADDED_TO_WISHLIST = false;
 
@@ -66,7 +78,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_spectacle_detail);
+        setContentView(R.layout.activity_detail);
 
         //init view of image layout
         viewPagerImages = findViewById(R.id.vp_images);
@@ -81,7 +93,7 @@ public class DetailActivity extends AppCompatActivity {
         //init view of detail layout
         textViewType = findViewById(R.id.tv_type);
         textViewAdresse = findViewById(R.id.tv_adresse);
-        textViewDate = findViewById(R.id.tv_date);
+        textViewDate = findViewById(R.id.tv_c_date);
         textViewHeure = findViewById(R.id.tv_heure);
         textViewInterExter = findViewById(R.id.tv_inter_exter);
         textViewAccesHandicap = findViewById(R.id.tv_acces_handicap);
@@ -90,13 +102,49 @@ public class DetailActivity extends AppCompatActivity {
         //init view of Add comment form layout
         textInputEditTextPseudo = findViewById(R.id.tiet_pseudonyme);
         ratingBarNote = findViewById(R.id.rb_note);
+        textInputEditTextCommentaire = findViewById(R.id.tiet_commentaire);
         buttonSubmitComment = findViewById(R.id.btn_submit_comment);
+        //init listview comments
+        recyclerViewCommentaires = findViewById(R.id.recycleview_commentaires);
 
         //Load data from api
         Intent intent = getIntent();
         spectacleId = intent.getStringExtra("spectacleId");
         new LoadSpectacleDataFromApiTask(this).execute(spectacleId);
+
+        //get typed data of comment
+        textInputEditTextPseudo.addTextChangedListener(pseudoTextWatcher);
+        textInputEditTextCommentaire.addTextChangedListener(pseudoTextWatcher);
+        buttonSubmitComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
+
+    private TextWatcher pseudoTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String pseudonymeInput = textInputEditTextPseudo.getText().toString().trim();
+            String commentaireInput = textInputEditTextCommentaire.getText().toString().trim();
+            buttonSubmitComment.setEnabled(!pseudonymeInput.isEmpty() && !commentaireInput.isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+    };
+
+
+    public void addNewComments(){
+
+    }
+
 
     private static class LoadSpectacleDataFromApiTask extends AsyncTask<String, Void, Spectacle> {
 
@@ -109,18 +157,30 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected Spectacle doInBackground(String... params) {
             Spectacle newSpectacle = null;
+            List<Commentaire> commentaires = null;
             DetailActivity activity = activityRef.get();
             if (activity == null || activity.isFinishing()) {
                 return null;
             }
             String id = params[0];
-            Call<Spectacle> callSync = spectacleService.getSpectacleById(Integer.parseInt(id));
+            Call<Spectacle> callSyncSpectacle = spectacleService.getSpectacleById(Integer.parseInt(id));
             try {
-                retrofit2.Response<Spectacle> response = callSync.execute();
+                retrofit2.Response<Spectacle> response = callSyncSpectacle.execute();
                 newSpectacle = response.body();
             } catch (Exception e) {
                 System.out.println("@Error spectacleService.getSpectacleById(" + id + "):" + e);
             }
+
+            Call<List<Commentaire>> callSyncComment = spectacleService.getAllCommentairesOfSpectacleById(Integer.parseInt(id));
+            try {
+                retrofit2.Response<List<Commentaire>> response = callSyncComment.execute();
+                commentaires = response.body();
+            } catch (Exception e) {
+                System.out.println("@Error spectacleService.getAllCommentairesOfSpectacleById(" + id + "):" + e);
+            }
+
+            newSpectacle.setCommentaires(commentaires);
+
             return newSpectacle;
         }
 
@@ -150,9 +210,12 @@ public class DetailActivity extends AppCompatActivity {
             activity.tabLayoutViewpagerIndicator.setupWithViewPager(activity.viewPagerImages, true);
             activity.textViewTitle.setText(s.getTitre());
 
-
-            activity.textViewAverageNote.setText("todo");
-            activity.textViewTotalComment.setText("todo");
+            DecimalFormat formatter = new DecimalFormat("#0.0");
+            double d = calculateAverageNote(s.getCommentaires());
+            String averageNoteFormat = (d>0)?formatter.format(d):"0.0";
+            activity.textViewAverageNote.setText(averageNoteFormat);
+            String textTotalComment = "("+s.getCommentaires().size()+") commentaires";
+            activity.textViewTotalComment.setText(textTotalComment);
             String prix = String.valueOf(s.getPrix());
             if (prix.equals("0") || prix.equals("0.0") || prix.equals("0.00")){
                 prix = "Gratuit";
@@ -184,9 +247,9 @@ public class DetailActivity extends AppCompatActivity {
             //Remplissage de la vue detail layout
             activity.textViewType.setText(String.valueOf(s.getTypeSpectacle()));
             activity.textViewAdresse.setText(s.getAdresse());
-            String dateHeure = s.getDateHeure().toString();
-            DateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm", Locale.getDefault());
-            Date parseDateHeure = format.parse(dateHeure);
+            Date dateHeure = s.getDateHeure();
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+            String parseDateHeure = format.format(dateHeure);
             String[] newDateHeure = parseDateHeure.toString().split(" ");
             activity.textViewDate.setText(newDateHeure[0]);
             activity.textViewHeure.setText(newDateHeure[1]);
@@ -194,10 +257,24 @@ public class DetailActivity extends AppCompatActivity {
             activity.textViewAccesHandicap.setText(s.isAccesHadicap() ? "Oui" : "Non");
             //init view of description layout
             activity.textViewDescription.setText(s.getDescription());
-            //init view of Add comment form layout
-        /*   TODO     activity.textInputEditTextPseudo
-        activity.ratingBarNote
-        activity.buttonSubmitComment*/
+
+
+            //init list of comments
+        activity.commentaireAdapter = new CommentaireAdapter(s.getCommentaires());
+        activity.recyclerViewCommentaires.setLayoutManager(
+                new LinearLayoutManager(activity.getApplicationContext(),
+                        LinearLayoutManager.VERTICAL,false));
+        activity.recyclerViewCommentaires.setAdapter(activity.commentaireAdapter);
+
+
+        }
+
+        public double calculateAverageNote(List<Commentaire> commentaires){
+            double sumNote = 0;
+            for (int i = 0; i < commentaires.size(); i++) {
+                sumNote = sumNote + commentaires.get(i).getNote();
+            }
+            return sumNote/commentaires.size();
         }
 
     }

@@ -38,16 +38,26 @@ dependencies {
     //Mapbox dependencies
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.2.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v8:0.7.0'
 
+    //mapbox navigation
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-navigation-ui:0.42.6'
+
+    //picasso
     implementation "com.squareup.picasso:picasso:2.71828"
 
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.1'
+
+    //rangeseekbar widget
+    implementation 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
+
+    implementation 'com.jakewharton:butterknife:8.4.0'
 }
 
 repositories {
     mavenCentral()
+    maven { url 'https://mapbox.bintray.com/mapbox' }
 }

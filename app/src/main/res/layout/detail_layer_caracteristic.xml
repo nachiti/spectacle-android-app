@@ -137,7 +137,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/tv_titre_list_comments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
@@ -146,7 +146,7 @@
                     android:textColor="@color/colorGris" />
 
                 <TextView
-                    android:id="@+id/tv_date"
+                    android:id="@+id/tv_c_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"

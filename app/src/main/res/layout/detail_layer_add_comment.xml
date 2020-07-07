@@ -39,9 +39,9 @@
             android:id="@+id/pseudonyme_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="@color/colorAccent"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:theme="@style/FormDefault"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -50,14 +50,19 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Pseudonyme"
-                android:inputType="text" />
+                android:maxLength="30"
+                android:inputType="text"
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            >
 
             <TextView
                 android:id="@+id/textView"
@@ -67,7 +72,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_gravity="center"
                 android:text="Note : "
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorPrimary"
 
                 />
 
@@ -79,15 +84,18 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginEnd="2dp"
                 android:rating="3.5"
+                android:scaleX="0.7"
+                android:scaleY="0.7"
+                android:progressTint="@color/colorPrimary"
                 />
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="@color/colorAccent"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:theme="@style/FormDefault"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -112,6 +120,7 @@
             android:textColor="@color/colorGris"
             android:background="@drawable/rectangle_background"
             app:rippleColor="@color/colorPrimary"
+            android:enabled="true"
             />
 
     </LinearLayout>

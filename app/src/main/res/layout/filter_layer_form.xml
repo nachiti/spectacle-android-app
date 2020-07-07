@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:focusable="true">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_ville"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/FormDefault"
+        app:errorEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Villes"
+            android:inputType="text"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="91dp"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Type :"
+                android:textColor="@color/colorPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <CheckBox
+                android:id="@+id/cb_musique"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Musique"
+                android:theme="@style/FormDefault"/>
+            <CheckBox
+                android:id="@+id/cb_theatre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Theatre"
+                android:theme="@style/FormDefault"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <CheckBox
+                android:id="@+id/cb_humour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Humour"
+                android:theme="@style/FormDefault"/>
+            <CheckBox
+                android:id="@+id/cb_danse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Dance"
+                android:theme="@style/FormDefault"/>
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="82dp"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Prix :"
+                android:textColor="@color/colorPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <org.florescu.android.rangeseekbar.RangeSeekBar
+                xmlns:rsb="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/rsb_prix"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                app:valuesAboveThumbs="true"
+                app:textAboveThumbsColor="@color/colorPrimaryDark"
+                rsb:thumbDisabled="@drawable/custom_slider_thumb"
+                rsb:thumbNormal="@drawable/custom_slider_thumb"
+                rsb:thumbPressed="@drawable/custom_slider_thumb"
+                rsb:thumbShadow="true" />
+        </TableRow>
+    </TableLayout>
+
+
+
+</LinearLayout>

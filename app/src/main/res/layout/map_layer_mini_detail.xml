@@ -52,6 +52,7 @@
                     android:layout_gravity="end"
                     android:layout_marginTop="2dp"
                     android:background="@drawable/cercle_backgroud"
+                    android:backgroundTint="@color/colorAccent"
                     android:gravity="center"
                     android:text="X"
                     android:textColor="@color/colorBlanc"
@@ -119,7 +120,8 @@
                 android:background="@drawable/rectangle_background"
                 android:text="ITINERAIRE"
                 android:textColor="@color/colorBlanc"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                />
         </LinearLayout>
 
     </LinearLayout>

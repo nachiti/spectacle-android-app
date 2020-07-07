@@ -5,6 +5,7 @@ import android.animation.AnimatorSet;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,6 +50,8 @@ import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
+import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Geometry;
@@ -71,6 +74,10 @@ import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.Property;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.squareup.picasso.Picasso;
 
 import java.lang.annotation.Retention;
@@ -82,6 +89,9 @@ import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
@@ -124,10 +134,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private MapView mapView;
     private MapboxMap mapboxMap;
     private RecyclerView recyclerView;
+    private Button btnStartNav;
+    private Button btnCancelNav;
 
+    private LocationComponent locationComponent;
     private PermissionsManager permissionsManager;
     private GeoJsonSource source;
     private FeatureCollection featureCollection;
+    private DirectionsRoute currentRoute;
+    private NavigationMapRoute navigationMapRoute;
 
     private HashMap<String, View> viewMap;
     private AnimatorSet animatorSet;
@@ -172,11 +187,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
 
         recyclerView = findViewById(R.id.rv_on_top_of_map);
+        btnStartNav = findViewById(R.id.btn_start_nav);
+        btnCancelNav = findViewById(R.id.btn_cancel_nav);
 
         // Initialize the map view
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        btnCancelNav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backToMiniDetatilView();
+            }
+        });
+
+        btnStartNav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startNavigation();
+            }
+        });
 
     }
 
@@ -213,7 +244,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
 
             // Get an instance of the component
-            LocationComponent locationComponent = mapboxMap.getLocationComponent();
+             locationComponent = mapboxMap.getLocationComponent();
 
             // Set the LocationComponent activation options
             LocationComponentActivationOptions locationComponentActivationOptions =
@@ -504,6 +535,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (recyclerView.getVisibility() == View.GONE) {
             recyclerView.setVisibility(View.VISIBLE);
         }
+        if (btnCancelNav.getVisibility() == View.VISIBLE) {
+            btnCancelNav.setVisibility(View.GONE);
+        }
+        if (btnStartNav.getVisibility() == View.VISIBLE) {
+            btnStartNav.setVisibility(View.GONE);
+        }
+        removeRoute();
 
         deselectAll(false);
 
@@ -683,6 +721,77 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return tiltAnimator;
     }
 
+    public void navigationItineraireBtnClick(){
+
+        recyclerView.setVisibility(View.GONE);
+
+        Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude()
+                ,locationComponent.getLastKnownLocation().getLatitude());
+        Point destinationPoint = (Point) getSelectedFeature().geometry();
+        System.out.println("originPoint : "+ originPoint);
+        System.out.println("destinationPoint : "+ destinationPoint);
+        getRoute(originPoint,destinationPoint);
+
+        btnCancelNav.setVisibility(View.VISIBLE);
+        btnStartNav.setVisibility(View.VISIBLE);
+    }
+
+    private void getRoute(Point originPoint, Point destinationPoint) {
+        NavigationRoute.builder(this)
+                .accessToken(getString(R.string.access_token))
+                .origin(originPoint)
+                .destination(destinationPoint)
+                .build()
+                .getRoute(new Callback<DirectionsResponse>() {
+                    @Override
+                    public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().routes().isEmpty()){
+                            currentRoute = response.body().routes().get(0);
+                            if (navigationMapRoute!=null){
+                                navigationMapRoute.updateRouteVisibilityTo(false);
+                                navigationMapRoute.updateRouteArrowVisibilityTo(false);
+                            }else {
+                                navigationMapRoute = new NavigationMapRoute(null,
+                                        mapView,mapboxMap,R.style.NavigationMapRoute);
+                            }
+                            navigationMapRoute.addRoute(currentRoute);
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+                        System.out.println("Erreur: "+t.getMessage());
+                    }
+                });
+    }
+
+    //Open map and start navigation
+    private void startNavigation(){
+        boolean simulateRoute = true;
+        // Create a NavigationLauncherOptions object to package everything together
+        NavigationLauncherOptions options = NavigationLauncherOptions.builder()
+                .directionsRoute(currentRoute)
+                .shouldSimulateRoute(simulateRoute)
+                .build();
+        // Call this method with Context from within an Activity
+        NavigationLauncher.startNavigation(this, options);
+    }
+
+    private void backToMiniDetatilView(){
+        removeRoute();
+        btnCancelNav.setVisibility(View.GONE);
+        btnStartNav.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void removeRoute(){
+        if (navigationMapRoute!=null) {
+            navigationMapRoute.updateRouteVisibilityTo(false);
+            navigationMapRoute.updateRouteArrowVisibilityTo(false);
+        }
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -705,6 +814,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onStop() {
         super.onStop();
         mapView.onStop();
+        if (navigationMapRoute != null) {
+            navigationMapRoute.onStop();
+        }
     }
 
     @Override
@@ -715,7 +827,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (mapboxMap != null) {
             mapboxMap.removeOnMapClickListener(this);
         }
@@ -724,6 +835,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (locationEngine != null) {
             locationEngine.removeLocationUpdates(callback);
         }
+        super.onDestroy();
     }
 
     @Override
@@ -900,7 +1012,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 FeatureCollection featureCollection = params[0];
 
                 for (Feature feature : featureCollection.features()) {
-                    View view = inflater.inflate(R.layout.mapillary_layout_callout, null);
+                    View view = inflater.inflate(R.layout.map_layer_bubble_on_marker, null);
 
                     String name = feature.getStringProperty(PROPERTY_ID);
 
@@ -992,7 +1104,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         @Override
         public MapActivity.LocationRecyclerViewAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.cardview_symbol_layer, parent, false);
+                    .inflate(R.layout.map_layer_mini_detail, parent, false);
             return new MapActivity.LocationRecyclerViewAdapter.MyViewHolder(itemView);
         }
 
@@ -1026,7 +1138,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             holder.btnItineraire.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    activity.navigationItineraireBtnClick();
                 }
             });
             holder.closebtn.setOnClickListener(new View.OnClickListener() {

@@ -7,4 +7,28 @@ public class Commentaire {
     private double note;
     private String texte;
     private Date date;
+
+    public Commentaire(String pseudonyme, double note, String texte) {
+        this.pseudonyme = pseudonyme;
+        this.note = note;
+        this.texte = texte;
+        this.date = new Date();
+    }
+
+    public String getPseudonyme() {
+        return pseudonyme;
+    }
+
+
+    public double getNote() {
+        return note;
+    }
+
+    public String getTexte() {
+        return texte;
+    }
+
+    public Date getDate() {
+        return date;
+    }
 }

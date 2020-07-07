@@ -1,5 +1,6 @@
 package com.example.spectacleapp.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class Spectacle {
         this.description = description;
         this.accesHadicap = accesHadicap;
         this.interExter = interExter;
+        this.commentaires = new ArrayList<>();
     }
 
     public String getId() {
@@ -135,6 +137,14 @@ public class Spectacle {
 
     public void setFavoris(boolean favoris) {
         this.favoris = favoris;
+    }
+
+    public List<Commentaire> getCommentaires() {
+        return commentaires;
+    }
+
+    public void setCommentaires(List<Commentaire> commentaires) {
+        this.commentaires = commentaires;
     }
 }
 

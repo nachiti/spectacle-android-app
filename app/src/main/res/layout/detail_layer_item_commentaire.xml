@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:background="@color/colorBlanc">
+
+    <TextView
+        android:id="@+id/tv_c_pseudo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:text="Bob"
+        android:textColor="@color/colorNoir"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/rb_c_note"
+        app:layout_constraintEnd_toStartOf="@+id/tv_c_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RatingBar
+        android:id="@+id/rb_c_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_c_pseudo"
+        style="?android:attr/ratingBarStyleSmall"
+        android:isIndicator="true"
+        android:rating="3.5"
+        android:progressTint="@color/colorPrimary"
+        />
+
+    <TextView
+        android:id="@+id/tv_c_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="16dp"
+        android:gravity="right"
+        android:text="06/06/2020 12:10"
+        app:layout_constraintBottom_toTopOf="@+id/rb_c_note"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/tv_c_pseudo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.666" />
+
+    <TextView
+        android:id="@+id/tv_c_texte"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/colorNoir"
+        android:text="Bon accueil, nous avons été guidé afin de trouver notre place. Le son est très bon. Les tarifs en boisson restent correct. Par contre les écrans de retransmission sur les côtés de la scène devraient être un peu plus grand."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rb_c_note"
+        app:layout_constraintVertical_bias="0.384" />
+</androidx.constraintlayout.widget.ConstraintLayout>

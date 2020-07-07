@@ -18,11 +18,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <include layout="@layout/spectacle_images_layout"/>
-            <include layout="@layout/spectacle_detail_layout"/>
-            <include layout="@layout/spectacle_description_layout"/>
-            <include layout="@layout/add_comment_layout"/>
-            <include layout="@layout/show_commentaire_layout"/>
+            <include layout="@layout/detail_layer_images"/>
+            <include layout="@layout/detail_layer_caracteristic"/>
+            <include layout="@layout/detail_layer_description"/>
+            <include layout="@layout/detail_layer_add_comment"/>
+            <include layout="@layout/detail_layer_list_commentaires"/>
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

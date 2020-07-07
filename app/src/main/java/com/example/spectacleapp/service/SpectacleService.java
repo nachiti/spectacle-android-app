@@ -36,4 +36,8 @@ public interface SpectacleService {
     @GET(value = "spectacles/{id}/images")
     Call<List<String>> getImagesnameOfSpectacle(@Path("id") Integer id);
 
+    //get list of commentaires of spectacle
+    @GET("spectacles/{id}/commentaires")
+    Call<List<Commentaire>> getAllCommentairesOfSpectacleById(@Path("id") Integer id);
+
 }
