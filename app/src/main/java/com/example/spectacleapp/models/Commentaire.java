@@ -3,6 +3,7 @@ package com.example.spectacleapp.models;
 import java.util.Date;
 
 public class Commentaire {
+    private String id;
     private String pseudonyme;
     private double note;
     private String texte;
@@ -30,5 +31,16 @@ public class Commentaire {
 
     public Date getDate() {
         return date;
+    }
+
+    @Override
+    public String toString() {
+        return "Commentaire{" +
+                "id='" + id + '\'' +
+                ", pseudonyme='" + pseudonyme + '\'' +
+                ", note=" + note +
+                ", texte='" + texte + '\'' +
+                ", date=" + date +
+                '}';
     }
 }

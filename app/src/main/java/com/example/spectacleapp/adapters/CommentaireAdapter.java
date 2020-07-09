@@ -60,7 +60,7 @@ public class CommentaireAdapter extends RecyclerView.Adapter<CommentaireAdapter.
         void display(Commentaire commentaire){
 
             textViewPseudo.setText(commentaire.getPseudonyme());
-
+            ratingBarNote.setRating((float) commentaire.getNote());
             Date dateHeure = commentaire.getDate();
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
             textViewDate.setText(format.format(dateHeure));

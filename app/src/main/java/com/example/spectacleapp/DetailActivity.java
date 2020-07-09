@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.spectacleapp.adapters.CommentaireAdapter;
 import com.example.spectacleapp.adapters.SpectacleImagesAdapter;
@@ -38,6 +39,8 @@ import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -65,6 +68,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextInputEditText textInputEditTextCommentaire;
     private Button buttonSubmitComment;
     //List view for comments
+    private TextView textViewTitreListComments;
     private RecyclerView recyclerViewCommentaires;
     private List<Commentaire> commentaireList;
     private CommentaireAdapter commentaireAdapter;
@@ -105,6 +109,7 @@ public class DetailActivity extends AppCompatActivity {
         textInputEditTextCommentaire = findViewById(R.id.tiet_commentaire);
         buttonSubmitComment = findViewById(R.id.btn_submit_comment);
         //init listview comments
+        textViewTitreListComments = findViewById(R.id.tv_titre_list_comments);
         recyclerViewCommentaires = findViewById(R.id.recycleview_commentaires);
 
         //Load data from api
@@ -113,38 +118,69 @@ public class DetailActivity extends AppCompatActivity {
         new LoadSpectacleDataFromApiTask(this).execute(spectacleId);
 
         //get typed data of comment
-        textInputEditTextPseudo.addTextChangedListener(pseudoTextWatcher);
-        textInputEditTextCommentaire.addTextChangedListener(pseudoTextWatcher);
         buttonSubmitComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String pseudonymeInput = textInputEditTextPseudo.getText().toString().trim();
+                String commentaireInput = textInputEditTextCommentaire.getText().toString().trim();
+                double note = ratingBarNote.getRating();
+                if (!pseudonymeInput.isEmpty() && note!= 0 && !commentaireInput.isEmpty()) {
+                    sendNewComments(new Commentaire(pseudonymeInput, note, commentaireInput));
+                } else {
+                    Toast.makeText(DetailActivity.this, "Le champ pseudonyme, etoile et commentaire ne doivent pas être vide", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private TextWatcher pseudoTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String pseudonymeInput = textInputEditTextPseudo.getText().toString().trim();
-            String commentaireInput = textInputEditTextCommentaire.getText().toString().trim();
-            buttonSubmitComment.setEnabled(!pseudonymeInput.isEmpty() && !commentaireInput.isEmpty());
-        }
+    public void sendNewComments(Commentaire commentaire) {
 
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-    };
+        spectacleService.addCommentaire(Integer.parseInt(spectacleId), commentaire)
+                .enqueue(new Callback<Commentaire>() {
+                    @Override
+                    public void onResponse(Call<Commentaire> call, Response<Commentaire> response) {
 
+                        if (response.isSuccessful()) {
+                            commentaireList.add(0, commentaire);
+                            recyclerViewCommentaires.scrollToPosition(0);
+                            commentaireAdapter.notifyItemInserted(0);
+                            //clear form
+                            textInputEditTextPseudo.setText("");
+                            ratingBarNote.setRating(0);
+                            textInputEditTextCommentaire.setText("");
+                            textInputEditTextCommentaire.clearFocus();
+                            textInputEditTextPseudo.clearFocus();
+                            updateAverageNoteAndNbrComments(commentaireList);
+                            recyclerViewCommentaires.setFocusable(true);
+                        }
+                    }
 
-    public void addNewComments(){
+                    @Override
+                    public void onFailure(Call<Commentaire> call, Throwable t) {
+                        System.out.println("error insertion: " + t.getMessage());
+                    }
+                });
 
     }
 
+    public void updateAverageNoteAndNbrComments(List<Commentaire> commentaires){
+        DecimalFormat formatter = new DecimalFormat("#0.0");
+        double d = calculateAverageNote(commentaires);
+        String averageNoteFormat = (d > 0) ? formatter.format(d) : "0.0";
+        textViewAverageNote.setText(averageNoteFormat);
+        String textTotalComment = "(" + commentaires.size() + ") commentaires ";
+        textViewTotalComment.setText(textTotalComment);
+        textViewTitreListComments.setText(commentaires.size() +" commentaires - note total : " +averageNoteFormat+"/5");
+    }
+
+    public double calculateAverageNote(List<Commentaire> commentaires) {
+        double sumNote = 0;
+        for (int i = 0; i < commentaires.size(); i++) {
+            sumNote = sumNote + commentaires.get(i).getNote();
+        }
+        return sumNote / commentaires.size();
+    }
 
     private static class LoadSpectacleDataFromApiTask extends AsyncTask<String, Void, Spectacle> {
 
@@ -178,7 +214,7 @@ public class DetailActivity extends AppCompatActivity {
             } catch (Exception e) {
                 System.out.println("@Error spectacleService.getAllCommentairesOfSpectacleById(" + id + "):" + e);
             }
-
+            activity.commentaireList = commentaires;
             newSpectacle.setCommentaires(commentaires);
 
             return newSpectacle;
@@ -210,17 +246,13 @@ public class DetailActivity extends AppCompatActivity {
             activity.tabLayoutViewpagerIndicator.setupWithViewPager(activity.viewPagerImages, true);
             activity.textViewTitle.setText(s.getTitre());
 
-            DecimalFormat formatter = new DecimalFormat("#0.0");
-            double d = calculateAverageNote(s.getCommentaires());
-            String averageNoteFormat = (d>0)?formatter.format(d):"0.0";
-            activity.textViewAverageNote.setText(averageNoteFormat);
-            String textTotalComment = "("+s.getCommentaires().size()+") commentaires";
-            activity.textViewTotalComment.setText(textTotalComment);
+            activity.updateAverageNoteAndNbrComments(s.getCommentaires());
+
             String prix = String.valueOf(s.getPrix());
-            if (prix.equals("0") || prix.equals("0.0") || prix.equals("0.00")){
+            if (prix.equals("0") || prix.equals("0.0") || prix.equals("0.00")) {
                 prix = "Gratuit";
-            }else {
-                prix = prix + "€";
+            } else {
+                prix = prix + " €";
             }
             activity.textViewPrix.setText(prix);
             activity.floatingActionButtonAddToWishlist.setOnClickListener(new View.OnClickListener() {
@@ -260,23 +292,14 @@ public class DetailActivity extends AppCompatActivity {
 
 
             //init list of comments
-        activity.commentaireAdapter = new CommentaireAdapter(s.getCommentaires());
-        activity.recyclerViewCommentaires.setLayoutManager(
-                new LinearLayoutManager(activity.getApplicationContext(),
-                        LinearLayoutManager.VERTICAL,false));
-        activity.recyclerViewCommentaires.setAdapter(activity.commentaireAdapter);
+            activity.commentaireAdapter = new CommentaireAdapter(s.getCommentaires());
+            activity.recyclerViewCommentaires.setLayoutManager(
+                    new LinearLayoutManager(activity.getApplicationContext(),
+                            LinearLayoutManager.VERTICAL, false));
+            activity.recyclerViewCommentaires.setAdapter(activity.commentaireAdapter);
 
 
         }
-
-        public double calculateAverageNote(List<Commentaire> commentaires){
-            double sumNote = 0;
-            for (int i = 0; i < commentaires.size(); i++) {
-                sumNote = sumNote + commentaires.get(i).getNote();
-            }
-            return sumNote/commentaires.size();
-        }
-
     }
 
 

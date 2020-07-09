@@ -19,6 +19,9 @@ public class Spectacle {
     private boolean favoris;
     private List<Commentaire> commentaires;
 
+    public Spectacle() {
+    }
+
     public Spectacle(String id, String titre, List<String> photosUrl, TypeSpectacle typeSpectacle, double latitude, double longitude, String adresse, Date dateHeure, double prix, String description, boolean accesHadicap, InterExter interExter) {
         this.id = id;
         this.titre = titre;

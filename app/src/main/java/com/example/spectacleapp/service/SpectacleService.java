@@ -8,6 +8,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -29,8 +30,9 @@ public interface SpectacleService {
                                  @Query("accesHandicap")Boolean accesHandicap);
 
     //add commentaire in spectacle
-    @POST("Commentaires")
-    Call<Commentaire> addCommentaire(@Body Commentaire commentaire);
+    @Headers("Content-Type: application/json")
+    @POST("spectacles/{id}/commentaires")
+    Call<Commentaire> addCommentaire(@Path("id")Integer id, @Body Commentaire commentaire);
 
     //get list imagesName of spectacle
     @GET(value = "spectacles/{id}/images")

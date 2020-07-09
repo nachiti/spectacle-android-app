@@ -25,9 +25,13 @@ public class ServiceGenerator {
     public static final String API_URL = "http://spectacle-serv.herokuapp.com/api/";
     public static final String API_IMAGE = API_URL+"images/";
 
+    private static Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            .create();
+
     private static Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(API_URL)
-            .addConverterFactory(GsonConverterFactory.create());
+            .addConverterFactory(GsonConverterFactory.create(gson));
 
     private static Retrofit retrofit = builder.build();
 
