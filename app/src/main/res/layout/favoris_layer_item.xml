@@ -8,7 +8,7 @@
     android:layout_marginEnd="8dp"
     android:layout_marginRight="8dp">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
@@ -26,7 +26,7 @@
             android:layout_marginBottom="3dp">
 
             <ImageView
-                android:id="@+id/cardviewImage"
+                android:id="@+id/favoris_image"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_marginTop="3dp"
@@ -43,21 +43,9 @@
                 android:layout_marginRight="3dp"
                 android:orientation="vertical"
                 >
-                <TextView
-                    android:id="@+id/cardviewClose"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="2dp"
-                    android:background="@drawable/cercle_backgroud"
-                    android:backgroundTint="@color/colorAccent"
-                    android:gravity="center"
-                    android:text="X"
-                    android:textColor="@color/colorBlanc"
-                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/cardviewTitre"
+                    android:id="@+id/favoris_titre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="LE PLUS GRAND CABARET DU MONDE"
@@ -65,7 +53,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/cardviewType"
+                    android:id="@+id/favoris_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -74,14 +62,23 @@
                     android:textColor="@color/colorBlanc" />
 
                 <TextView
-                    android:id="@+id/cardviewDate"
+                    android:id="@+id/favoris_adresse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Zenith de lille 59800 Lille"
+                    android:textColor="@color/colorBlanc" />
+
+                <TextView
+                    android:id="@+id/favoris_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="10/07/2020"
                     android:textColor="@color/colorBlanc" />
+
                 <TextView
-                    android:id="@+id/cardviewHeure"
+                    android:id="@+id/favoris_heure"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -89,7 +86,7 @@
                     android:textColor="@color/colorBlanc" />
 
                 <TextView
-                    android:id="@+id/cardviewPrix"
+                    android:id="@+id/favoris_prix"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -97,39 +94,22 @@
                     android:textColor="@color/colorBlanc"
                     android:textSize="18sp"
                     android:textStyle="bold" />
+
             </LinearLayout>
 
-
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <Button
+            android:id="@+id/favoris_delete"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginRight="6dp"
             android:layout_marginBottom="8dp"
-            android:gravity="center_horizontal">
+            android:background="@drawable/ic_delete"
+            android:gravity="center"
+            android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/cardviewBtnDetail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/rectangle_background"
-                android:text="DETAIL"
-                android:textColor="@color/colorBlanc"
-                android:layout_marginEnd="8dp" />
-
-            <Button
-                android:id="@+id/cardviewBtnItineraire"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/rectangle_background"
-                android:text="ITINERAIRE"
-                android:textColor="@color/colorBlanc"
-                android:layout_marginStart="8dp"
-                />
-        </LinearLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 
 </androidx.cardview.widget.CardView>

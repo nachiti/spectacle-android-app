@@ -110,6 +110,72 @@
                 rsb:thumbPressed="@drawable/custom_slider_thumb"
                 rsb:thumbShadow="true" />
         </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="184dp"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Intérieur/Extérieur :"
+                android:textColor="@color/colorPrimary" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <CheckBox
+                android:id="@+id/cb_interierur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Intérieur"
+                android:theme="@style/FormDefault"/>
+            <CheckBox
+                android:id="@+id/cb_exterieur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Extérieur"
+                android:theme="@style/FormDefault"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="184dp"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Accès handicap :"
+                android:textColor="@color/colorPrimary" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <CheckBox
+                android:id="@+id/cb_handicap_oui"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Oui"
+                android:theme="@style/FormDefault"/>
+            <CheckBox
+                android:id="@+id/cb_handicap_non"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:padding="5dp"
+                android:text="Non"
+                android:theme="@style/FormDefault"/>
+        </TableRow>
+
     </TableLayout>
 
 

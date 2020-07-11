@@ -68,6 +68,8 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.CircleLayer;
 import com.mapbox.mapboxsdk.style.layers.Layer;
@@ -83,7 +85,9 @@ import com.squareup.picasso.Picasso;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +97,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+import static android.view.View.GONE;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.exponential;
@@ -110,6 +115,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
+import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
+import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         PermissionsListener, MapboxMap.OnMapClickListener {
@@ -136,6 +143,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private RecyclerView recyclerView;
     private Button btnStartNav;
     private Button btnCancelNav;
+    private boolean routeNavigationIsVisible = false;
 
     private LocationComponent locationComponent;
     private PermissionsManager permissionsManager;
@@ -314,9 +322,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         List<Feature> features = mapboxMap.queryRenderedFeatures(screenPoint, CALLOUT_LAYER_ID);
         if (!features.isEmpty()) {
             // we received a click event on the callout layer
-            Feature feature = features.get(0);
+            /*Feature feature = features.get(0);
             PointF symbolScreenPoint = mapboxMap.getProjection().toScreenLocation(convertToLatLng(feature));
-            handleClickCallout(feature, screenPoint, symbolScreenPoint);
+            handleClickCallout(feature, screenPoint, symbolScreenPoint);*/
         } else {
             // we didn't find a click event on callout layer, try clicking maki layer
             return handleClickIcon(screenPoint);
@@ -466,7 +474,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      * @param screenPoint       the point on screen clicked
      * @param symbolScreenPoint the point of the symbol on screen
      */
-    private void handleClickCallout(Feature feature, PointF screenPoint, PointF symbolScreenPoint) {
+   /* private void handleClickCallout(Feature feature, PointF screenPoint, PointF symbolScreenPoint) {
 
         String id = feature.getStringProperty(PROPERTY_ID);
         View view = viewMap.get(id);
@@ -483,20 +491,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         hitRectText.offset(0, -view.getMeasuredHeight());
 
         // hit test if clicked point is in textview hitbox
-        if (hitRectText.contains((int) screenPoint.x, (int) screenPoint.y)) {
+*//*        if (hitRectText.contains((int) screenPoint.x, (int) screenPoint.y)) {
             // user clicked on text
-            String callout = feature.getStringProperty("call-out");
-            Toast.makeText(this, callout, Toast.LENGTH_LONG).show();
+           *//**//* String callout = feature.getStringProperty("call-out");
+            Toast.makeText(this, callout, Toast.LENGTH_LONG).show();*//**//*
         } else {
             // user clicked on icon
             List<Feature> featureList = featureCollection.features();
             for (int i = 0; i < featureList.size(); i++) {
                 if (featureList.get(i).getStringProperty(PROPERTY_ID).equals(feature.getStringProperty(PROPERTY_ID))) {
-                    toggleFavourite(i);
+                    //toggleFavourite(i);
                 }
             }
-        }
-    }
+        }*//*
+    }*/
 
     /**
      * This method handles click events for marker symbols.
@@ -622,7 +630,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      *
      * @param index the index of the feature to favourite/de-favourite
      */
-    private void toggleFavourite(int index) {
+/*    private void toggleFavourite(int index) {
         Feature feature = featureCollection.features().get(index);
         String title = feature.getStringProperty(PROPERTY_ID);
         boolean currentState = feature.getBooleanProperty(PROPERTY_FAVOURITE);
@@ -639,7 +647,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 refreshSource();
             }
         });
-    }
+    }*/
 
     /**
      * Invoked when the bitmaps have been generated from a view.
@@ -1016,7 +1024,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     String name = feature.getStringProperty(PROPERTY_ID);
 
-                    //compter le nombre de spectacle pour une adresse
+/*                    //compter le nombre de spectacle pour une adresse
                     int cpt = 0;
                     Geometry position = feature.geometry();
                     for (int i = 0; i < featureCollection.features().size(); i++) {
@@ -1025,15 +1033,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         }
                     }
                     TextView titleTv = view.findViewById(R.id.cpt);
-                    titleTv.setText(String.valueOf(cpt));
+                    titleTv.setText(String.valueOf(cpt));*/
 
                     String adresse = feature.getStringProperty("adresse");
                     TextView styleTv = view.findViewById(R.id.adresse);
                     styleTv.setText(adresse);
 
-                    boolean favourite = feature.getBooleanProperty(PROPERTY_FAVOURITE);
+                   /* boolean favourite = feature.getBooleanProperty(PROPERTY_FAVOURITE);
                     ImageView imageView = view.findViewById(R.id.logoView);
-                    imageView.setImageResource(favourite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
+                    imageView.setImageResource(favourite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);*/
 
                     Bitmap bitmap = MapActivity.SymbolGenerator.generate(view);
                     imagesMap.put(name, bitmap);
@@ -1118,7 +1126,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Picasso.get().load(imageUri).into(holder.image);
             holder.titre.setText(feature.getStringProperty("titre"));
             holder.type.setText(feature.getStringProperty("typeSpectacle"));
-            holder.adresse.setText(feature.getStringProperty("adresse"));
+
+            String dateHeure = feature.getStringProperty("dateHeure");
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+            String parseDateHeure = format.format(dateHeure);
+            String[] newDateHeure = parseDateHeure.toString().split(" ");
+            holder.date.setText(newDateHeure[0]);
+            holder.heure.setText(newDateHeure[1]);
 
             String prix = feature.getStringProperty("prix");
             if (prix.equals("0")) {
@@ -1148,14 +1162,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     activity.refreshSource();
                 }
             });
-            holder.setClickListener(new MapActivity.ItemClickListener() {
+/*            holder.setClickListener(new MapActivity.ItemClickListener() {
                 @Override
                 public void onClick(View view, int position) {
                     if (activity != null) {
                         activity.toggleFavourite(position);
                     }
                 }
-            });
+            });*/
         }
 
         @Override
@@ -1172,7 +1186,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ImageView image;
             TextView titre;
             TextView type;
-            TextView adresse;
+            TextView date;
+            TextView heure;
             TextView prix;
             Button btnDetail;
             Button btnItineraire;
@@ -1186,7 +1201,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 image = view.findViewById(R.id.cardviewImage);
                 titre = view.findViewById(R.id.cardviewTitre);
                 type = view.findViewById(R.id.cardviewType);
-                adresse = view.findViewById(R.id.cardviewAdresse);
+                date = view.findViewById(R.id.cardviewDate);
+                heure = view.findViewById(R.id.cardviewHeure);
                 prix = view.findViewById(R.id.cardviewPrix);
                 btnDetail = view.findViewById(R.id.cardviewBtnDetail);
                 btnItineraire = view.findViewById(R.id.cardviewBtnItineraire);
