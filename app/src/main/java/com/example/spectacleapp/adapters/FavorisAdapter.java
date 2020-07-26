@@ -12,8 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.spectacleapp.R;
 import com.example.spectacleapp.models.Spectacle;
-import com.example.spectacleapp.service.ServiceGenerator;
-import com.google.gson.JsonArray;
+import com.example.spectacleapp.service.NetworkService;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -98,7 +97,7 @@ public class FavorisAdapter extends RecyclerView.Adapter<FavorisAdapter.FavorisV
         Spectacle currentSpectacle = spectaclesFavoris.get(position);
 
         List<String> images = currentSpectacle.getPhotosUrl();
-        String imageUri = ServiceGenerator.API_IMAGE + images.get(0);
+        String imageUri = NetworkService.API_IMAGE + images.get(0);
         Picasso.get().load(imageUri).into(holder.imageViewImage);
         holder.textViewTitre.setText(currentSpectacle.getTitre());
         holder.textViewType.setText(String.valueOf(currentSpectacle.getTypeSpectacle()));

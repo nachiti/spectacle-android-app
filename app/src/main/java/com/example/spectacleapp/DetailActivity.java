@@ -10,12 +10,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +20,7 @@ import com.example.spectacleapp.adapters.CommentaireAdapter;
 import com.example.spectacleapp.adapters.SpectacleImagesAdapter;
 import com.example.spectacleapp.models.Commentaire;
 import com.example.spectacleapp.models.Spectacle;
-import com.example.spectacleapp.service.ServiceGenerator;
+import com.example.spectacleapp.service.NetworkService;
 import com.example.spectacleapp.service.SpectacleService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -76,7 +72,7 @@ public class DetailActivity extends AppCompatActivity {
     private boolean ALREADY_ADDED_TO_WISHLIST = false;
 
     private String spectacleId;
-    public static SpectacleService spectacleService = ServiceGenerator.createService(SpectacleService.class);
+    public static SpectacleService spectacleService = NetworkService.createService(SpectacleService.class);
     private Spectacle spectacle;
 
     @Override
@@ -239,7 +235,7 @@ public class DetailActivity extends AppCompatActivity {
             //Remplissage de la vue image layout
             List<String> imageUrls = new ArrayList<>();
             for (int i = 0; i < s.getPhotosUrl().size(); i++) {
-                imageUrls.add(ServiceGenerator.API_IMAGE + s.getPhotosUrl().get(i));
+                imageUrls.add(NetworkService.API_IMAGE + s.getPhotosUrl().get(i));
             }
             SpectacleImagesAdapter spectacleImagesAdapter = new SpectacleImagesAdapter(activity, imageUrls);
             activity.viewPagerImages.setAdapter(spectacleImagesAdapter);

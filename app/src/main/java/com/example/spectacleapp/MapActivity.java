@@ -5,19 +5,19 @@ import android.animation.AnimatorSet;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,7 +38,7 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import com.example.spectacleapp.converter.SpectacleConverter;
 import com.example.spectacleapp.models.Spectacle;
-import com.example.spectacleapp.service.ServiceGenerator;
+import com.example.spectacleapp.service.NetworkService;
 import com.example.spectacleapp.service.SpectacleService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,7 +54,6 @@ import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -68,8 +67,6 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.CircleLayer;
 import com.mapbox.mapboxsdk.style.layers.Layer;
@@ -87,7 +84,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,9 +91,7 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
-import static android.view.View.GONE;
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.exponential;
@@ -115,8 +109,6 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
-import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
-import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,
         PermissionsListener, MapboxMap.OnMapClickListener {
@@ -183,7 +175,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     //Appel à la class service
-    public static SpectacleService spectacleService = ServiceGenerator.createService(SpectacleService.class);
+    public static SpectacleService spectacleService = NetworkService.createService(SpectacleService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +210,42 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
+    }
+
+    //gère le click sur une action de l'ActionBar
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_seach:
+                showSearch();
+                return true;
+            case R.id.menu_favoris:
+                showFavoris();
+                return true;
+            case R.id.menu_compte:
+                showCompte();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void showSearch(){
+        Toast.makeText(this, "Recherche",Toast.LENGTH_LONG).show();
+    }
+
+    private void showFavoris(){
+        Toast.makeText(this,"Favoris",Toast.LENGTH_LONG).show();
+    }
+    private void showCompte(){
+        Toast.makeText(this,"Compte",Toast.LENGTH_LONG).show();
+    }
+
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
@@ -1121,16 +1149,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Feature feature = featureCollection.get(position);
 
             JsonArray images = feature.getProperty("photosUrl").getAsJsonArray();
-            String imageUri = ServiceGenerator.API_IMAGE + images.get(0).getAsString();
+            String imageUri = NetworkService.API_IMAGE + images.get(0).getAsString();
 
             Picasso.get().load(imageUri).into(holder.image);
             holder.titre.setText(feature.getStringProperty("titre"));
             holder.type.setText(feature.getStringProperty("typeSpectacle"));
-
-            String dateHeure = feature.getStringProperty("dateHeure");
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-            String parseDateHeure = format.format(dateHeure);
-            String[] newDateHeure = parseDateHeure.toString().split(" ");
+            String parseDateHeure = feature.getStringProperty("dateHeure");
+            String[] newDateHeure = parseDateHeure.split(" ");
             holder.date.setText(newDateHeure[0]);
             holder.heure.setText(newDateHeure[1]);
 
