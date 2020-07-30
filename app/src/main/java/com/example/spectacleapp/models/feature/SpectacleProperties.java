@@ -21,7 +21,7 @@ public class SpectacleProperties {
     public long bearing;
     public long tilt;
 
-    public SpectacleProperties(String id, String titre, List<String> photosUrl, String typeSpectacle, String adresse, String dateHeure, double prix, String description, boolean accesHandicap, String interExter) {
+    public SpectacleProperties(String id, String titre, List<String> photosUrl, String typeSpectacle, String adresse, String dateHeure, double prix, String description, boolean accesHandicap, String interExter, boolean favourite) {
         this.id = id;
         this.titre = titre;
         this.photosUrl = photosUrl;
@@ -32,6 +32,7 @@ public class SpectacleProperties {
         this.description = description;
         this.accesHandicap = accesHandicap;
         this.interExter = interExter;
+        this.favourite = favourite;
         this.selected = false;
         this.loading = false;
         this.loadingProgress = 4;

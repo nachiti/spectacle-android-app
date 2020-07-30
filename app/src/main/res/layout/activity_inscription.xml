@@ -8,6 +8,9 @@
     tools:context=".InscriptionActivity"
     android:background="@color/colorBackground"
     >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,13 +18,14 @@
 
         <ImageButton
             android:id="@+id/btn_inscription_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:background="@drawable/oval_background"
             android:backgroundTint="@color/colorAccent"
+            android:onClick="onClickBtnCloseInscription"
             android:padding="16dp"
             android:src="@drawable/ic_close"
             android:tint="@color/colorBlanc"
@@ -34,13 +38,13 @@
             android:layout_height="165dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/logo2" />
+            app:srcCompat="@drawable/logo" />
 
         <EditText
             android:id="@+id/inscription_pseudonyme"
@@ -48,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:ems="10"
@@ -64,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:ems="10"
@@ -80,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:ems="10"
@@ -96,11 +100,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:background="@drawable/rectangle_background"
             android:text="ENREGISTRER"
+            android:onClick="onClickSubmit"
             android:textAllCaps="true"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -108,4 +113,6 @@
             app:layout_constraintTop_toBottomOf="@+id/inscription_password2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 </FrameLayout>

@@ -16,9 +16,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkService {
 
-    public static final String API_URL = "http://spectacle-serv.herokuapp.com/api/public/";
-    public static final String API_USER_URL = "http://spectacle-serv.herokuapp.com/api/user/";
-    public static final String API_IMAGE = API_URL+"images/";
+    //public static final String URl_SERVEUR = "http://192.168.0.20:8080/";
+    public static final String API_URL = "http://spectacle-serv.herokuapp.com/api/";
+    public static final String API_IMAGE = API_URL+"public/images/";
 
     private static Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
@@ -46,7 +46,6 @@ public class NetworkService {
             okHttpClientBuilder.addInterceptor(loggingInterceptor);
             retrofitBuilder.client(okHttpClientBuilder.build());
         }
-        System.out.println("coucou test oo");
         retrofitBuilder.client(okHttpClientBuilder.build());
 
         return retrofit.create(serviceClass);

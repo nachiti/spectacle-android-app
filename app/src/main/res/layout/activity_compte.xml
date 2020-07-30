@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CompteActivity">
+
+    <TextView
+        android:id="@+id/tv_compte_pseudonyme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Bonjour Nom !"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"/>
+
+    <Button
+        android:id="@+id/btn_compte_modifier"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/rectangle_background"
+        android:text="Modifier votre identifiant"
+        android:onClick="onClickButtonModifierCompte"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_compte_supprimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/rectangle_background"
+        android:text="Supprimer Votre Compte"
+        android:onClick="onClickButtonSupprimer"
+        android:textSize="16sp"
+        android:backgroundTint="@color/colorBackground"
+        />
+
+    <Button
+        android:id="@+id/btn_compte_deconnecter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/rectangle_background"
+        android:text="Déconnecter"
+        android:onClick="onClickButtonDeconnecter"
+        android:textSize="16sp"
+        android:textColor="@color/colorBlanc"
+        android:backgroundTint="@color/colorPrimary"/>
+
+</LinearLayout>

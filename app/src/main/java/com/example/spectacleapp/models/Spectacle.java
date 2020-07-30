@@ -16,7 +16,7 @@ public class Spectacle {
     private String description;
     private boolean accesHadicap;
     private InterExter interExter;
-    private boolean favoris;
+    private boolean favourite;
     private List<Commentaire> commentaires;
 
     public Spectacle() {
@@ -134,12 +134,12 @@ public class Spectacle {
         this.interExter = interExter;
     }
 
-    public boolean isFavoris() {
-        return favoris;
+    public boolean isFavourite() {
+        return favourite;
     }
 
-    public void setFavoris(boolean favoris) {
-        this.favoris = favoris;
+    public void setFavourite(boolean favourite) {
+        this.favourite = favourite;
     }
 
     public List<Commentaire> getCommentaires() {
@@ -149,6 +149,27 @@ public class Spectacle {
     public void setCommentaires(List<Commentaire> commentaires) {
         this.commentaires = commentaires;
     }
+
+    @Override
+    public String toString() {
+        return "Spectacle{" +
+                "id='" + id + '\'' +
+                ", titre='" + titre + '\'' +
+                ", photosUrl=" + photosUrl +
+                ", typeSpectacle=" + typeSpectacle +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", adresse='" + adresse + '\'' +
+                ", dateHeure=" + dateHeure +
+                ", prix=" + prix +
+                ", description='" + description + '\'' +
+                ", accesHadicap=" + accesHadicap +
+                ", interExter=" + interExter +
+                ", favourite=" + favourite +
+                ", commentaires=" + commentaires +
+                '}';
+    }
 }
+
 
 

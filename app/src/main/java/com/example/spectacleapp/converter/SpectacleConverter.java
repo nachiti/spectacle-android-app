@@ -37,7 +37,8 @@ public class SpectacleConverter {
                                 s.getPrix(),
                                 s.getDescription(),
                                 s.isAccesHadicap(),
-                                s.getInterExter().toString()),
+                                s.getInterExter().toString(),
+                                s.isFavourite()),
                         new SpectacleGeometry(Arrays.asList(
                                 s.getLongitude(),
                                 s.getLatitude()

@@ -5,13 +5,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +23,9 @@ import com.example.spectacleapp.adapters.CommentaireAdapter;
 import com.example.spectacleapp.adapters.SpectacleImagesAdapter;
 import com.example.spectacleapp.models.Commentaire;
 import com.example.spectacleapp.models.Spectacle;
+import com.example.spectacleapp.models.Utilisateur;
 import com.example.spectacleapp.service.NetworkService;
+import com.example.spectacleapp.service.ServiceGenerator;
 import com.example.spectacleapp.service.SpectacleService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -59,7 +64,10 @@ public class DetailActivity extends AppCompatActivity {
     //description layout
     private TextView textViewDescription;
     //Add comment form layout
-    private TextInputEditText textInputEditTextPseudo;
+    private LinearLayout linearLayoutConnection;
+    private Button buttonSeconnecter;
+    private Button buttonSinscrire;
+    private LinearLayout linearLayoutComment;
     private RatingBar ratingBarNote;
     private TextInputEditText textInputEditTextCommentaire;
     private Button buttonSubmitComment;
@@ -74,6 +82,13 @@ public class DetailActivity extends AppCompatActivity {
     private String spectacleId;
     public static SpectacleService spectacleService = NetworkService.createService(SpectacleService.class);
     private Spectacle spectacle;
+
+    private static SharedPreferences sharedPreferencesUser;
+    private static SharedPreferences sharedPreferencesFavoris;
+    private static final String USER = "user";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String FAVORIS = "favoris";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +115,24 @@ public class DetailActivity extends AppCompatActivity {
         //init view of description layout
         textViewDescription = findViewById(R.id.tv_description);
         //init view of Add comment form layout
-        textInputEditTextPseudo = findViewById(R.id.tiet_pseudonyme);
+        linearLayoutConnection  = findViewById(R.id.linearLayout_connexion);
+        buttonSeconnecter = findViewById(R.id.btn_seconnecter);
+        buttonSinscrire= findViewById(R.id.btn_sinscrire);
+        linearLayoutComment= findViewById(R.id.linearLayout_add_comment);
         ratingBarNote = findViewById(R.id.rb_note);
         textInputEditTextCommentaire = findViewById(R.id.tiet_commentaire);
         buttonSubmitComment = findViewById(R.id.btn_submit_comment);
         //init listview comments
         textViewTitreListComments = findViewById(R.id.tv_titre_list_comments);
         recyclerViewCommentaires = findViewById(R.id.recycleview_commentaires);
+
+        sharedPreferencesUser = getSharedPreferences(USER, Context.MODE_PRIVATE);
+        sharedPreferencesFavoris = getSharedPreferences(FAVORIS, Context.MODE_PRIVATE);
+
+        if(sharedPreferencesUser.contains(USERNAME)){
+            linearLayoutConnection.setVisibility(View.GONE);
+            linearLayoutComment.setVisibility(View.VISIBLE);
+        }
 
         //Load data from api
         Intent intent = getIntent();
@@ -117,7 +143,7 @@ public class DetailActivity extends AppCompatActivity {
         buttonSubmitComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String pseudonymeInput = textInputEditTextPseudo.getText().toString().trim();
+                String pseudonymeInput =  sharedPreferencesUser.getString(USERNAME,"");
                 String commentaireInput = textInputEditTextCommentaire.getText().toString().trim();
                 double note = ratingBarNote.getRating();
                 if (!pseudonymeInput.isEmpty() && note!= 0 && !commentaireInput.isEmpty()) {
@@ -129,10 +155,19 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
+    public void onButtonClickSeconnecter(View view){
+        startActivity(new Intent(DetailActivity.this,LoginActivity.class));
+    }
+
+    public void onButtonClickSinscrire(View view){
+        startActivity(new Intent(DetailActivity.this,InscriptionActivity.class));
+    }
 
     public void sendNewComments(Commentaire commentaire) {
-
-        spectacleService.addCommentaire(Integer.parseInt(spectacleId), commentaire)
+        String u = sharedPreferencesUser.getString(USERNAME, "");
+        String p = sharedPreferencesUser.getString(PASSWORD, "");
+        ServiceGenerator.createService(SpectacleService.class,u,p)
+        .addCommentaire(Integer.parseInt(spectacleId), commentaire)
                 .enqueue(new Callback<Commentaire>() {
                     @Override
                     public void onResponse(Call<Commentaire> call, Response<Commentaire> response) {
@@ -142,11 +177,9 @@ public class DetailActivity extends AppCompatActivity {
                             recyclerViewCommentaires.scrollToPosition(0);
                             commentaireAdapter.notifyItemInserted(0);
                             //clear form
-                            textInputEditTextPseudo.setText("");
                             ratingBarNote.setRating(0);
                             textInputEditTextCommentaire.setText("");
                             textInputEditTextCommentaire.clearFocus();
-                            textInputEditTextPseudo.clearFocus();
                             updateAverageNoteAndNbrComments(commentaireList);
                             recyclerViewCommentaires.setFocusable(true);
                         }
@@ -213,6 +246,10 @@ public class DetailActivity extends AppCompatActivity {
             activity.commentaireList = commentaires;
             newSpectacle.setCommentaires(commentaires);
 
+            if(activity.sharedPreferencesFavoris.contains(newSpectacle.getId())){
+                newSpectacle.setFavourite(true);
+            }
+
             return newSpectacle;
         }
 
@@ -251,27 +288,12 @@ public class DetailActivity extends AppCompatActivity {
                 prix = prix + " €";
             }
             activity.textViewPrix.setText(prix);
-            activity.floatingActionButtonAddToWishlist.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (activity.ALREADY_ADDED_TO_WISHLIST) {
-                        activity.ALREADY_ADDED_TO_WISHLIST = false;
-                        activity.floatingActionButtonAddToWishlist.setSupportImageTintList(
-                                ColorStateList.valueOf(Color.parseColor("#9e9e9e")));
-                    } else {
-                        activity.ALREADY_ADDED_TO_WISHLIST = true;
-                        activity.floatingActionButtonAddToWishlist.setSupportImageTintList(
-                                activity.getResources().getColorStateList(R.color.colorPrimary));
-                        //TODO add favorite
-                    }
-                }
-            });
-            activity.floatingActionButtonShowItineraire.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //TODO show itineraire
-                }
-            });
+            if(s.isFavourite() || sharedPreferencesFavoris.contains(s.getId())){
+                activity.ALREADY_ADDED_TO_WISHLIST = true;
+                activity.floatingActionButtonAddToWishlist.setSupportImageTintList(
+                        activity.getResources().getColorStateList(R.color.colorPrimary));
+            }
+
             //Remplissage de la vue detail layout
             activity.textViewType.setText(String.valueOf(s.getTypeSpectacle()));
             activity.textViewAdresse.setText(s.getAdresse());
@@ -299,4 +321,95 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
+    public void onfloatingActionButtonClickAddToWishlist(View view) {
+        //si il est connecté
+        if (sharedPreferencesUser.contains(USERNAME)) {
+            if (ALREADY_ADDED_TO_WISHLIST) { // si selectioné alors supprimer au favoris
+                ALREADY_ADDED_TO_WISHLIST = false;
+                floatingActionButtonAddToWishlist.setSupportImageTintList(
+                        ColorStateList.valueOf(Color.parseColor("#9e9e9e")));
+                int id = Integer.parseInt(spectacleId);
+
+                    String u = sharedPreferencesUser.getString(USERNAME, "");
+                    String p = sharedPreferencesUser.getString(PASSWORD, "");
+                    ServiceGenerator.createService(SpectacleService.class, u, p)
+                            .supprimerSpectacleDuFavoris(u, id).enqueue(new Callback<Utilisateur>() {
+                        @Override
+                        public void onResponse(Call<Utilisateur> call, Response<Utilisateur> response) {
+                            if (response.isSuccessful()) {
+
+                                SharedPreferences.Editor editor = sharedPreferencesUser.edit();
+                                editor.remove(spectacleId);
+                                editor.commit();
+                                spectacle.setFavourite(false);
+                                Toast.makeText(DetailActivity.this, "succes!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(DetailActivity.this, "Error : " + response.code() + response.message(), Toast.LENGTH_SHORT).show();
+                                System.out.println("Erreur de suppression du favoris :" + response.code() + response.message());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Utilisateur> call, Throwable t) {
+                            Toast.makeText(DetailActivity.this, "Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            System.out.println("Erreur de suppression du favoris :" + t.getMessage());
+                        }
+                    });
+
+            }
+            else { // si  non selectioné alors ajouter au favoris
+                ALREADY_ADDED_TO_WISHLIST = true;
+                floatingActionButtonAddToWishlist.setSupportImageTintList(
+                        getResources().getColorStateList(R.color.colorPrimary));
+                int id = Integer.parseInt(spectacleId);
+
+                String u = sharedPreferencesUser.getString(USERNAME, "");
+                String p = sharedPreferencesUser.getString(PASSWORD, "");
+                ServiceGenerator.createService(SpectacleService.class, u, p).ajouterSpectacleAuFavoris(u, id)
+                        .enqueue(new Callback<Utilisateur>() {
+                            @Override
+                            public void onResponse(Call<Utilisateur> call, Response<Utilisateur> response) {
+                                if (response.isSuccessful()) {
+                                    SharedPreferences.Editor editor = sharedPreferencesUser.edit();
+                                    editor.putString(spectacleId, spectacleId);
+                                    editor.commit();
+                                    spectacle.setFavourite(true);
+                                    System.out.println("8888888888888888 SUCESS Ajout favoris 88888888888888888");
+                                } else {
+                                    Toast.makeText(DetailActivity.this, "Error : " + response.code() + response.message(), Toast.LENGTH_SHORT).show();
+                                    System.out.println("Erreur Ajout favoris :" + response.code() + response.message());
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Utilisateur> call, Throwable t) {
+                                Toast.makeText(DetailActivity.this, "Error : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                System.out.println("Erreur Ajout favoris :" + t.getMessage());
+                            }
+                        });
+            }
+        } else {
+            startActivity(new Intent(DetailActivity.this, LoginActivity.class));
+        }
+    }
+
+
+    public void onfloatingActionButtonClickItineraire(View view) {
+        Intent intent = new Intent(DetailActivity.this, MapActivity.class);
+        startActivity(intent.putExtra("showItineraireSpectacleId", spectacleId));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        linearLayoutConnection.setVisibility(View.VISIBLE);
+        linearLayoutComment.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        linearLayoutConnection.setVisibility(View.VISIBLE);
+        linearLayoutComment.setVisibility(View.GONE);
+    }
 }

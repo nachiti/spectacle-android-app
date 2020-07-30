@@ -5,7 +5,9 @@ import android.animation.AnimatorSet;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -37,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import com.example.spectacleapp.converter.SpectacleConverter;
+import com.example.spectacleapp.models.Search;
 import com.example.spectacleapp.models.Spectacle;
 import com.example.spectacleapp.service.NetworkService;
 import com.example.spectacleapp.service.SpectacleService;
@@ -82,8 +85,8 @@ import com.squareup.picasso.Picasso;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,10 +94,12 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.exponential;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.format;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.interpolate;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
@@ -131,16 +136,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final int LOADING_PROGRESS_STEPS = 25; //number of steps in a progress animation
 
     private MapView mapView;
-    private MapboxMap mapboxMap;
+    private static MapboxMap mapboxMap;
     private RecyclerView recyclerView;
     private Button btnStartNav;
     private Button btnCancelNav;
     private boolean routeNavigationIsVisible = false;
 
-    private LocationComponent locationComponent;
+    private static LocationComponent locationComponent;
     private PermissionsManager permissionsManager;
-    private GeoJsonSource source;
-    private FeatureCollection featureCollection;
+    private static GeoJsonSource source;
+    private static FeatureCollection featureCollection;
     private DirectionsRoute currentRoute;
     private NavigationMapRoute navigationMapRoute;
 
@@ -177,6 +182,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //Appel à la class service
     public static SpectacleService spectacleService = NetworkService.createService(SpectacleService.class);
 
+    private Search search;
+    private SharedPreferences sharedPreferencesUser;
+    private SharedPreferences sharedPreferencesFavoris;
+    private static final String USER = "user";
+    private static final String USERNAME = "username";
+    private static final String PASSWORD = "password";
+    private static final String FAVORIS = "favoris";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,10 +202,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         recyclerView = findViewById(R.id.rv_on_top_of_map);
         btnStartNav = findViewById(R.id.btn_start_nav);
         btnCancelNav = findViewById(R.id.btn_cancel_nav);
-
+        sharedPreferencesUser = getSharedPreferences(USER, Context.MODE_PRIVATE);
+        sharedPreferencesFavoris = getSharedPreferences(FAVORIS, Context.MODE_PRIVATE);
         // Initialize the map view
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
+        //Load intent data
+        Intent intent = getIntent();
+        search = (Search) intent.getSerializableExtra("search");
+
         mapView.getMapAsync(this);
 
         btnCancelNav.setOnClickListener(new View.OnClickListener() {
@@ -209,6 +227,45 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+    }
+
+
+    @Override
+    public void onMapReady(@NonNull final MapboxMap mapboxMap) {
+        this.mapboxMap = mapboxMap;
+
+        mapboxMap.setStyle(Style.MAPBOX_STREETS
+                , new Style.OnStyleLoaded() {
+                    @Override
+                    public void onStyleLoaded(@NonNull Style style) {
+                        enableLocationComponent(style);
+
+                        mapboxMap.getUiSettings().setCompassEnabled(true);
+                        mapboxMap.getUiSettings().setLogoEnabled(false);
+                        mapboxMap.getUiSettings().setAttributionEnabled(false);
+                        new LoadPoiDataTask(MapActivity.this).execute(search); //etape 1
+                        mapboxMap.addOnMapClickListener(MapActivity.this);
+
+                        String showItineraireSpectacleId = getIntent().getStringExtra("showItineraireSpectacleId");
+                        if(showItineraireSpectacleId!=null && !showItineraireSpectacleId.isEmpty()){
+                            int i = getIndexofSpectacleInFeatures(showItineraireSpectacleId);
+                            setSelected(i,true);
+                            navigationItineraireBtnClick();
+                        }
+
+                        //**FIN onStyleLoaded**//
+                    }
+                });
+
+    }
+
+    public int getIndexofSpectacleInFeatures(String id){
+        for (int i = 0; i < featureCollection.features().size(); i++) {
+            if(featureCollection.features().get(i).getStringProperty("id").equals(id)){
+                return i;
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -236,40 +293,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
     private void showSearch(){
-        Toast.makeText(this, "Recherche",Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, FilterActivity.class);
+        intent.putExtra("search",search);
+        this.startActivity(intent);
     }
 
     private void showFavoris(){
-        Toast.makeText(this,"Favoris",Toast.LENGTH_LONG).show();
+        if (sharedPreferencesUser.contains(USERNAME)){
+            startActivity(new Intent(MapActivity.this,FavorisActivity.class));
+        }else {
+            startActivity(new Intent(MapActivity.this,LoginActivity.class));
+        }
     }
     private void showCompte(){
-        Toast.makeText(this,"Compte",Toast.LENGTH_LONG).show();
+        if (sharedPreferencesUser.contains(USERNAME)){
+            startActivity(new Intent(MapActivity.this,CompteActivity.class));
+        }else {
+            startActivity(new Intent(MapActivity.this,LoginActivity.class));
+        }
     }
-
-
-    @Override
-    public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-
-        this.mapboxMap = mapboxMap;
-
-        mapboxMap.setStyle(Style.MAPBOX_STREETS
-                , new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        enableLocationComponent(style);
-
-                        mapboxMap.getUiSettings().setCompassEnabled(true);
-                        mapboxMap.getUiSettings().setLogoEnabled(false);
-                        mapboxMap.getUiSettings().setAttributionEnabled(false);
-                        new LoadPoiDataTask(MapActivity.this).execute(); //etape 1
-                        mapboxMap.addOnMapClickListener(MapActivity.this);
-
-                        //**FIN onStyleLoaded**//
-                    }
-                });
-
-    }
-
 
     /**
      * Initialize the Maps SDK's LocationComponent
@@ -961,7 +1003,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     /**
      * AsyncTask to load data from the Api.
      */
-    private static class LoadPoiDataTask extends AsyncTask<Void, Void, FeatureCollection> {
+    private static class LoadPoiDataTask extends AsyncTask<Search, Void, FeatureCollection> {
+
+        private static List<Spectacle> spectacleList;
 
         private static String gsonString = "";
         private final WeakReference<MapActivity> activityRef;
@@ -971,32 +1015,59 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         @Override
-        protected FeatureCollection doInBackground(Void... params) {
+        protected FeatureCollection doInBackground(Search... params) {
+
+            Search search = params[0];
             MapActivity activity = activityRef.get();
 
             if (activity == null) {
                 return null;
             }
 
-            String geoJson = loadGeoJsonFromApi();
+            String geoJson = null;
+            try {
+                geoJson = loadGeoJsonFromApi(search,activity);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return FeatureCollection.fromJson(geoJson);
         }
 
         //etape 3
-        static String loadGeoJsonFromApi() {
-
+        static String loadGeoJsonFromApi(Search search, MapActivity activity) throws InterruptedException {
             Call<List<Spectacle>> callSync = spectacleService.getAllSpectacles();
-
-            try {
-                retrofit2.Response<List<Spectacle>> response = callSync.execute();
-                List<Spectacle> spectacles = response.body();
-
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                gsonString = gson.toJson(SpectacleConverter.convertToSpectacleFeature(spectacles));
-            } catch (Exception e) {
-                System.out.println("@Error getAllSpectacles:" + e);
+            if (search != null) {
+                callSync = spectacleService.getAllSpectaclesBySeach(search);
             }
+            int tryCount = 1;
+            boolean isNotSuccessful = true;
+            while (isNotSuccessful && tryCount <= 3) {
+                System.out.println("tentative de connection " + tryCount);
 
+                try {
+                    retrofit2.Response<List<Spectacle>> response = callSync.execute();
+                    List<Spectacle> spectacles = response.body();
+                    if(activity.sharedPreferencesFavoris.getAll().size()>0){
+                        for (Map.Entry<String,?> entry : activity.sharedPreferencesFavoris.getAll().entrySet()){
+                            for (Spectacle sp : spectacles) {
+                                if(sp.getId().equals(entry.getKey())){
+                                    sp.setFavourite(true);
+                                }
+                            }
+                        }
+                    }
+
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    gsonString = gson.toJson(SpectacleConverter.convertToSpectacleFeature(spectacles));
+                    isNotSuccessful = false;
+                    System.out.println("Success!");
+                } catch (Exception e) {
+                    isNotSuccessful = true;
+                    tryCount++;
+                    System.out.println("@Error getAllSpectacles:" + e);
+                    Thread.sleep(3000);
+                }
+            }
             return gsonString;
         }
 
@@ -1187,14 +1258,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     activity.refreshSource();
                 }
             });
-/*            holder.setClickListener(new MapActivity.ItemClickListener() {
+            holder.setClickListener(new MapActivity.ItemClickListener() {
                 @Override
                 public void onClick(View view, int position) {
                     if (activity != null) {
-                        activity.toggleFavourite(position);
+                        Intent intent = new Intent(activity, DetailActivity.class);
+                        intent.putExtra("spectacleId", feature.getStringProperty("id"));
+                        activity.startActivity(intent);
                     }
                 }
-            });*/
+            });
         }
 
         @Override

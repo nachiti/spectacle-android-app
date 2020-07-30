@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">spectacle</string>
+    <string name="app_name">Spectacle</string>
     <!--<string name="access_token">PASTE_YOUR_ACCESS_TOKEN_HERE</string>-->
     <string name="access_token">pk.eyJ1IjoiYWRldGVyIiwiYSI6ImNrYmRncXh0NzBic3gzNXBtc2dwaXU2M3EifQ.Ev8VOnmjCnpKJI6jqDKuGA</string>
 </resources>

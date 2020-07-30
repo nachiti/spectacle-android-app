@@ -14,22 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".InscriptionActivity"></activity>
-        <activity android:name=".SplashActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".FavorisActivity" />
-        <activity android:name=".FilterActivity" />
-        <activity android:name=".MapActivity">
+
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".DetailActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".MainActivity" />
+
+        <activity android:name=".CompteActivity"/>
+        <activity android:name=".InscriptionActivity"/>
+        <activity android:name=".LoginActivity"/>
+        <activity android:name=".FavorisActivity" />
+        <activity android:name=".FilterActivity" />
+        <activity android:name=".MapActivity"/>
+        <activity android:name=".DetailActivity" android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

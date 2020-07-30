@@ -8,12 +8,12 @@
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/gradient_background"
-    tools:context=".SplashActivity">
+    tools:context=".MainActivity">
 
     <ImageView
         android:id="@+id/splash_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:srcCompat="@drawable/logo2" />
+        app:srcCompat="@drawable/logo" />
 </LinearLayout>

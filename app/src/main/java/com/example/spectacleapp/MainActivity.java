@@ -2,38 +2,30 @@ package com.example.spectacleapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
-
-    Button button;
+    private ImageView imageViewLogo;
+    private Animation animation;
+    private static int SPLASH_TIME_OUT = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        this.button = findViewById(R.id.btn);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopup();
-            }
-        });
-
-    }
-
-    public void showPopup(){
-        TextView textClose;
-        Button btnDetail;
-        //Toast.makeText(MainActivity.this, "COUCOU Dialog", Toast.LENGTH_SHORT).show();
+        setContentView(R.layout.activity_splash);
+        imageViewLogo = findViewById(R.id.splash_logo);
+        animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.transition);
+        imageViewLogo.startAnimation(animation);
+        SystemClock.sleep(SPLASH_TIME_OUT);
+        Intent mapIntent = new Intent(MainActivity.this,MapActivity.class);
+        startActivity(mapIntent);
+        finish();
     }
 }

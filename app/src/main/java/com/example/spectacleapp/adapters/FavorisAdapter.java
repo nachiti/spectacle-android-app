@@ -24,6 +24,13 @@ public class FavorisAdapter extends RecyclerView.Adapter<FavorisAdapter.FavorisV
     private List<Spectacle> spectaclesFavoris;
     private OnItemClickListener favorisListener;
 
+    public FavorisAdapter(){
+    }
+
+    public void setSpectaclesFavoris(List<Spectacle> spectaclesFavoris) {
+        this.spectaclesFavoris = spectaclesFavoris;
+    }
+
     public interface OnItemClickListener {
         void onItemClick(int position);
         void onDeleteClick(int position);
