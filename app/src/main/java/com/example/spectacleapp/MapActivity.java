@@ -1045,7 +1045,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 System.out.println("tentative de connection " + tryCount);
 
                 try {
-                    retrofit2.Response<List<Spectacle>> response = callSync.execute();
+                    retrofit2.Response<List<Spectacle>> response = callSync.clone().execute();
                     List<Spectacle> spectacles = response.body();
                     if(activity.sharedPreferencesFavoris.getAll().size()>0){
                         for (Map.Entry<String,?> entry : activity.sharedPreferencesFavoris.getAll().entrySet()){

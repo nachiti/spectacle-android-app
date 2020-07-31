@@ -56,8 +56,8 @@ public interface SpectacleService {
      * @param commentaire
      * @return
      */
-    @Headers("Content-Type: application/json")
-    @POST("/user/spectacles/{idSpectacle}/commentaires")
+    //@Headers("Content-Type: application/json")
+    @POST("user/spectacles/{idSpectacle}/commentaires")
     Call<Commentaire> addCommentaire(@Path("idSpectacle")Integer id, @Body Commentaire commentaire);
 
     /**

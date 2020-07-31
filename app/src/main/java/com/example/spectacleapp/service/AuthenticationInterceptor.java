@@ -18,15 +18,11 @@ public class AuthenticationInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request original = chain.request();
 
-        Request.Builder builder = original.newBuilder()
-                .header("Authorization", authToken);
+        Request.Builder builder = original.newBuilder();
+        builder.header("Content-Type", "application/json");
+        builder.header("Authorization", authToken);
 
         Request request = builder.build();
-        System.out.println("********************************************");
-        System.out.println("Header: "+request.headers().toString());
-        System.out.println("url: "+request.url());
-        System.out.println("body: "+request.body());
-        System.out.println("********************************************");
         return chain.proceed(request);
     }
 }

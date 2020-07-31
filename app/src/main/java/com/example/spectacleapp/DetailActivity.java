@@ -147,6 +147,7 @@ public class DetailActivity extends AppCompatActivity {
                 String commentaireInput = textInputEditTextCommentaire.getText().toString().trim();
                 double note = ratingBarNote.getRating();
                 if (!pseudonymeInput.isEmpty() && note!= 0 && !commentaireInput.isEmpty()) {
+
                     sendNewComments(new Commentaire(pseudonymeInput, note, commentaireInput));
                 } else {
                     Toast.makeText(DetailActivity.this, "Le champ pseudonyme, etoile et commentaire ne doivent pas être vide", Toast.LENGTH_SHORT).show();
@@ -164,6 +165,8 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     public void sendNewComments(Commentaire commentaire) {
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("Commentaire: "+commentaire);
         String u = sharedPreferencesUser.getString(USERNAME, "");
         String p = sharedPreferencesUser.getString(PASSWORD, "");
         ServiceGenerator.createService(SpectacleService.class,u,p)
@@ -182,11 +185,16 @@ public class DetailActivity extends AppCompatActivity {
                             textInputEditTextCommentaire.clearFocus();
                             updateAverageNoteAndNbrComments(commentaireList);
                             recyclerViewCommentaires.setFocusable(true);
+                        }{
+                            System.out.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
+                            System.out.println(response.code() + response.message() + response.body());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Commentaire> call, Throwable t) {
+                        System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                        System.out.println("Commentaire: "+commentaire);
                         System.out.println("error insertion: " + t.getMessage());
                     }
                 });
