@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.spectacleapp.dialog.MyConfirmDialog;
 import com.example.spectacleapp.models.Commentaire;
 import com.example.spectacleapp.service.ServiceGenerator;
 import com.example.spectacleapp.service.SpectacleService;
@@ -21,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CompteActivity extends AppCompatActivity {
+public class CompteActivity extends AppCompatActivity implements MyConfirmDialog.MyDialogListener {
 
     private SharedPreferences sharedPreferencesUser;
     private SharedPreferences sharedPreferencesFavoris;
@@ -64,65 +65,50 @@ public class CompteActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
+
+    public void deconnection(){
+        SharedPreferences.Editor editorUser = sharedPreferencesUser.edit();
+        editorUser.clear();
+        SharedPreferences.Editor editorFavoris = sharedPreferencesFavoris.edit();
+        editorFavoris.clear();
+        startActivity(new Intent(CompteActivity.this, MapActivity.class));
+        Toast.makeText(this, "Vous êtes bien deconnecté !", Toast.LENGTH_SHORT).show();
+    }
+
     public void onClickButtonDeconnecter(View v){
-        SharedPreferences.Editor editorUser = sharedPreferencesUser.edit();
-        editorUser.clear();
-        SharedPreferences.Editor editorFavoris = sharedPreferencesFavoris.edit();
-        editorFavoris.clear();
-        startActivity(new Intent(CompteActivity.this, MapActivity.class));
-        Toast.makeText(this, "Vous êtes bien deconnecté !", Toast.LENGTH_SHORT).show();
+        deconnection();
     }
 
-    public void onClickButtonSupprimer(View v){
-
-        SharedPreferences.Editor editorUser = sharedPreferencesUser.edit();
-        editorUser.clear();
-        SharedPreferences.Editor editorFavoris = sharedPreferencesFavoris.edit();
-        editorFavoris.clear();
-        startActivity(new Intent(CompteActivity.this, MapActivity.class));
-        Toast.makeText(this, "Vous êtes bien deconnecté !", Toast.LENGTH_SHORT).show();
-    }
 
     public void showConfirmDialog(View view){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("Confirmer la suppression compte !");
-        alertDialogBuilder.setIcon(R.drawable.ic_info_red);
-        alertDialogBuilder.setMessage("Êtes-vous sûr de vouloir supprimer votre compte ?");
-        alertDialogBuilder.setCancelable(true);
-        alertDialogBuilder.setPositiveButton("OUI", new DialogInterface.OnClickListener() {
-            //Delete User
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
+        MyConfirmDialog myDialog = new MyConfirmDialog();
+        myDialog.show(getSupportFragmentManager(),"example dialog");
+    }
 
-                String u = sharedPreferencesUser.getString(USERNAME, "");
-                String p = sharedPreferencesUser.getString(PASSWORD, "");
-                ServiceGenerator.createService(SpectacleService.class,u,p).supprimerUnUtilisateur(u)
-                        .enqueue(new Callback<Response>() {
-                            @Override
-                            public void onResponse(Call<Response> call, Response<Response> response) {
-                                if (response.isSuccessful()) {
-                                    onClickButtonDeconnecter(view);
-                                    Toast.makeText(CompteActivity.this, "Votre compte est bien supprimer!", Toast.LENGTH_SHORT).show();
-                                }else {
-                                    System.out.println("Erreur de suppression de compte : " + response.code()+response.message());
-                                }
+    @Override
+    public void confirmSuppresion(boolean confirm) {
+        if (confirm){
+            String u = sharedPreferencesUser.getString(USERNAME, "");
+            String p = sharedPreferencesUser.getString(PASSWORD, "");
+            ServiceGenerator.createService(SpectacleService.class,u,p).supprimerUnUtilisateur(u)
+                    .enqueue(new Callback<Response>() {
+                        @Override
+                        public void onResponse(Call<Response> call, Response<Response> response) {
+                            if (response.isSuccessful()) {
+                                deconnection();
+                                Toast.makeText(CompteActivity.this, "Votre compte est bien supprimer!", Toast.LENGTH_SHORT).show();
+                            }else {
+                                System.out.println("Erreur de suppression de compte : " + response.code()+response.message());
                             }
+                        }
 
-                            @Override
-                            public void onFailure(Call<Response> call, Throwable t) {
-                                System.out.println("Erreur de suppression de compte : " + t.getMessage());
-                            }
-                        });
-
-
-
-            }
-        });
-        alertDialogBuilder.setNegativeButton("NON", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(CompteActivity.this,"Vous avez cliqué sur Non",Toast.LENGTH_SHORT).show();
-            }
-        });
+                        @Override
+                        public void onFailure(Call<Response> call, Throwable t) {
+                            System.out.println("Erreur de suppression de compte : " + t.getMessage());
+                        }
+                    });
+        }else {
+            Toast.makeText(CompteActivity.this,"Vous avez cliqué sur Non",Toast.LENGTH_SHORT).show();
+        }
     }
 }
